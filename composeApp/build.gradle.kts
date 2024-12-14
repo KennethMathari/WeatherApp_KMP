@@ -1,13 +1,43 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
+import java.util.Properties
+
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.0")
+        classpath("com.codingfeline.buildkonfig:buildkonfig-gradle-plugin:0.15.2")
+    }
+}
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    kotlin("plugin.serialization") version "1.9.0"
+    id("com.codingfeline.buildkonfig") version "0.15.2"
 }
+
+// Load local.properties
+fun loadLocalProperties(): Properties {
+    val props = Properties()
+    val localPropertiesFile = rootProject.file("local.properties")
+    if (localPropertiesFile.exists()) {
+        props.load(localPropertiesFile.inputStream())
+    }
+    return props
+}
+
+val localProperties = loadLocalProperties()
+val openWeatherApiKey: String = localProperties.getProperty("OPEN_WEATHER_API_KEY") ?: "API_KEY_NOT_FOUND"
+
 
 kotlin {
     androidTarget {
@@ -28,10 +58,7 @@ kotlin {
         }
     }
     
-    jvm("desktop")
-    
     sourceSets {
-        val desktopMain by getting
         
         androidMain.dependencies {
             implementation(compose.preview)
@@ -41,8 +68,11 @@ kotlin {
             //Koin
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
+            //Ktor
+            implementation(libs.ktor.client.okhttp)
 
         }
+
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
@@ -55,26 +85,40 @@ kotlin {
             //Koin
             implementation(libs.koin.compose)
             implementation(libs.koin.compose.viewmodel)
-            implementation("io.insert-koin:koin-core-viewmodel:4.1.0-Beta1")
-            implementation("io.insert-koin:koin-compose-viewmodel:4.1.0-Beta1")
+            implementation(libs.koin.core.viewmodel)
+            implementation(libs.koin.compose.viewmodel.v410beta1)
             //Compose Navigation
             implementation(libs.navigation.compose)
             // Geolocation
             implementation(libs.compass.geolocation)
             implementation(libs.compass.geolocation.mobile)
             implementation(libs.compass.permissions.mobile)
-
+            // Ktor
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.client.logging)
+            implementation(libs.ktor.serialization.kotlinx.json)
 
         }
-        desktopMain.dependencies {
-            implementation(compose.desktop.currentOs)
-            implementation(libs.kotlinx.coroutines.swing)
+
+        iosMain.dependencies {
+            //Ktor
+            implementation(libs.ktor.client.darwin)
         }
+
         getByName("commonMain") {
             dependencies {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
             }
         }
+    }
+}
+
+buildkonfig {
+    packageName = "co.ke.weather.multiplatform"
+
+    defaultConfigs {
+        buildConfigField(STRING, "OPEN_WEATHER_API_KEY", openWeatherApiKey)
     }
 }
 
@@ -107,16 +151,4 @@ android {
 
 dependencies {
     debugImplementation(compose.uiTooling)
-}
-
-compose.desktop {
-    application {
-        mainClass = "co.ke.weather.multiplatform.MainKt"
-
-        nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "co.ke.weather.multiplatform"
-            packageVersion = "1.0.0"
-        }
-    }
 }

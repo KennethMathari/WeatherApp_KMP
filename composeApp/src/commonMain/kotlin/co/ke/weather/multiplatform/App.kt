@@ -21,8 +21,7 @@ fun App(
     MaterialTheme {
 
         Column {
-            Text("Latitude: ${weatherState.location?.latitude}")
-            Text("Longitude: ${weatherState.location?.longitude}")
+            Text("City: ${weatherState.weatherForecastDTO?.city}")
         }
 
     }
