@@ -64,7 +64,6 @@ class WeatherViewModel(
 
     private fun getWeatherForecast(latitude: Double, longitude: Double) {
         viewModelScope.launch {
-            println("API KEEY:${openWeatherApiKey}")
             weatherRepository.getWeatherForecast(
                 latitude = latitude.toString(),
                 longitude = longitude.toString(),
