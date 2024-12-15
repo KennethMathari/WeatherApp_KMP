@@ -108,7 +108,7 @@ kotlin {
         commonTest.dependencies {
             implementation(libs.kotlin.test)
             implementation(kotlin("test-annotations-common"))
-            // Assert
+            // Assertk
             implementation(libs.assertk)
             // Kotlin Coroutine Test
             implementation(libs.kotlinx.coroutines.test)

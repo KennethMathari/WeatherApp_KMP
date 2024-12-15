@@ -7,6 +7,7 @@ import co.ke.weather.multiplatform.utils.NetworkResult
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.ClientRequestException
+import io.ktor.client.plugins.ResponseException
 import io.ktor.client.plugins.ServerResponseException
 import io.ktor.client.request.get
 import io.ktor.http.isSuccess
@@ -33,30 +34,28 @@ class WeatherRepositoryImpl(
 
                 val response = httpClient.get(url)
 
-                if (!response.status.isSuccess()) {
-                    println("Error fetching weather forecast: ${response.status}")
+                if (response.status.isSuccess()) {
+                    val weatherForecastDTO = response.body<WeatherForecastDTO>()
+                    emit(NetworkResult.Success(weatherForecastDTO))
+                } else {
                     emit(
                         NetworkResult.NetworkError(
-                            Throwable(message = response.status.description)
+                            Throwable("Error fetching weather: ${response.status.description}")
                         )
                     )
                 }
-
-                val weatherForecastDTO = response.body<WeatherForecastDTO>()
-
-                emit(NetworkResult.Success(weatherForecastDTO))
             } catch (e: IOException) {
-                e.printStackTrace()
                 emit(NetworkResult.NetworkError(e))
-            } catch (e: ClientRequestException) {
-                e.printStackTrace()
-                emit(NetworkResult.ClientError(e))
-            } catch (e: ServerResponseException) {
-                e.printStackTrace()
-                NetworkResult.ServerError(e)
+            } catch (e: ResponseException) {
+                emit(
+                    when (e) {
+                        is ClientRequestException -> NetworkResult.ClientError(e)
+                        is ServerResponseException -> NetworkResult.ServerError(e)
+                        else -> NetworkResult.NetworkError(e)
+                    }
+                )
             } catch (e: Exception) {
-                e.printStackTrace()
-                NetworkResult.NetworkError(e)
+                emit(NetworkResult.NetworkError(e))
             }
         }.flowOn(ioDispatcher)
     }
