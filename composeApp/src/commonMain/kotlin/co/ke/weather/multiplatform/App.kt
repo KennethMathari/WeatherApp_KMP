@@ -25,8 +25,8 @@ fun App(
             ErrorScreen(errorMessage = weatherState.errorMessage ?: "Error")
         }
 
-        weatherState.weatherForecastDTO != null -> {
-            weatherState.weatherForecastDTO?.let {
+        weatherState.weatherForecast != null -> {
+            weatherState.weatherForecast?.let {
                 WeatherScreen(weatherForecastDTO = it)
             }
         }

@@ -3,9 +3,11 @@ package co.ke.weather.multiplatform.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.ke.weather.multiplatform.BuildKonfig
+import co.ke.weather.multiplatform.data.model.weather.WeatherForecastDTO
 import co.ke.weather.multiplatform.domain.repository.WeatherRepository
 import co.ke.weather.multiplatform.ui.state.WeatherState
 import co.ke.weather.multiplatform.utils.NetworkResult
+import co.ke.weather.multiplatform.utils.toDayOfWeek
 import dev.jordond.compass.Priority
 import dev.jordond.compass.geolocation.Geolocator
 import dev.jordond.compass.geolocation.GeolocatorResult
@@ -26,7 +28,17 @@ class WeatherViewModel(
 
 
     init {
-        fetchUserLocation()
+        checkApiKey(openWeatherApiKey)
+    }
+
+    private fun checkApiKey(openWeatherApiKey: String) {
+        if (openWeatherApiKey.isEmpty() || openWeatherApiKey == "DEFAULT_API_KEY") {
+            _weatherState.value = WeatherState(
+                isLoading = false, weatherForecast = null, errorMessage = "API Key is not set!"
+            )
+        } else {
+            fetchUserLocation()
+        }
     }
 
 
@@ -34,7 +46,7 @@ class WeatherViewModel(
         viewModelScope.launch {
 
             _weatherState.value = WeatherState(
-                isLoading = true, weatherForecastDTO = null, errorMessage = null
+                isLoading = true, weatherForecast = null, errorMessage = null
             )
 
             when (val locationResult = Geolocator.mobile().current(Priority.HighAccuracy)) {
@@ -55,7 +67,7 @@ class WeatherViewModel(
                     }
 
                     _weatherState.value = WeatherState(
-                        isLoading = false, weatherForecastDTO = null, errorMessage = errorMessage
+                        isLoading = false, weatherForecast = null, errorMessage = errorMessage
                     )
                 }
             }
@@ -85,7 +97,9 @@ class WeatherViewModel(
 
                     is NetworkResult.Success -> {
                         _weatherState.value = WeatherState(
-                            isLoading = false, weatherForecastDTO = result.data, errorMessage = null
+                            isLoading = false,
+                            weatherForecast = filterDailyWeather(result.data),
+                            errorMessage = null
                         )
                     }
                 }
@@ -98,8 +112,18 @@ class WeatherViewModel(
     private fun updateErrorMessage(errorMessage: String) {
         viewModelScope.launch {
             _weatherState.value = WeatherState(
-                isLoading = false, weatherForecastDTO = null, errorMessage = errorMessage
+                isLoading = false, weatherForecast = null, errorMessage = errorMessage
             )
         }
+    }
+
+    private fun filterDailyWeather(forecast: WeatherForecastDTO): WeatherForecastDTO {
+        val filteredList = forecast.list.filter { weatherItem ->
+            weatherItem.dtTxt.contains("12:00:00")
+        }
+
+        return forecast.copy(
+            list = filteredList
+        )
     }
 }

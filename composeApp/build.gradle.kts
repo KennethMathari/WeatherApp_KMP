@@ -36,7 +36,7 @@ fun loadLocalProperties(): Properties {
 }
 
 val localProperties = loadLocalProperties()
-val openWeatherApiKey: String = localProperties.getProperty("OPEN_WEATHER_API_KEY") ?: "API_KEY_NOT_FOUND"
+val openWeatherApiKey: String = localProperties.getProperty("OPEN_WEATHER_API_KEY") ?: "DEFAULT_API_KEY"
 
 
 kotlin {
@@ -98,6 +98,9 @@ kotlin {
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.client.logging)
             implementation(libs.ktor.serialization.kotlinx.json)
+            // DateTime
+            implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
+
 
         }
 
@@ -147,8 +150,4 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-}
-
-dependencies {
-    debugImplementation(compose.uiTooling)
 }
