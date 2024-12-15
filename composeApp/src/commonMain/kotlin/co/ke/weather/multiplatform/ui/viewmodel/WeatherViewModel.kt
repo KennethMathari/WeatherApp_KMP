@@ -31,7 +31,7 @@ class WeatherViewModel(
         checkApiKey(openWeatherApiKey)
     }
 
-    private fun checkApiKey(openWeatherApiKey: String) {
+    fun checkApiKey(openWeatherApiKey: String) {
         if (openWeatherApiKey.isEmpty() || openWeatherApiKey == "DEFAULT_API_KEY") {
             _weatherState.value = WeatherState(
                 isLoading = false, weatherForecast = null, errorMessage = "API Key is not set!"
