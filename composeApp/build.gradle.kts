@@ -46,13 +46,15 @@ kotlin {
     }
 
     listOf(
-        iosX64(), iosArm64("iosArm64"){
-            binaries{
+        iosX64(),
+            iosArm64("iosArm64") {
+            binaries {
                 executable {
                     entryPoint = "main"
                 }
             }
-        }, iosSimulatorArm64()
+        },
+            iosSimulatorArm64()
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
