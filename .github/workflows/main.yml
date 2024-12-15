@@ -74,21 +74,22 @@ jobs:
         run: |
           xcode-select --install || echo "Xcode Command Line Tools already installed."
 
-      # 4. Build iOS Framework
+      # 4. Grant execute permission for gradlew
+      - name: Grant execute permissions for gradlew
+        run: chmod +x gradlew
+
+      # 5. Build iOS Framework
       - name: Build iOS Framework
         run: ./gradlew iosX64Binaries
+
+      # 6. Generate iOS Executable
+      - name: Generate iOS Executable
+        run: ./gradlew linkDebugExecutableIosArm64
 
       # 5. Upload iOS Framework
       - name: Upload iOS Framework
         uses: actions/upload-artifact@v4
         with:
           name: ios-framework
-          path: build/bin/iosX64/debugFramework
+          path: composeApp/build/bin/iosArm64/debugExecutable/
 
-  clean:
-    name: Clean Gradle Cache
-    if: always()
-    runs-on: ubuntu-latest
-    steps:
-      - name: Clean Gradle
-        run: ./gradlew clean
