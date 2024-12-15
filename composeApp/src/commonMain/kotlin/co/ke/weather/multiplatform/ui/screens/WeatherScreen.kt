@@ -50,9 +50,9 @@ import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun WeatherScreen(
-    weatherForecastDTO: WeatherForecastDTO, modifier: Modifier = Modifier
+    weatherForecastDTO: WeatherForecastDTO,
+    modifier: Modifier = Modifier
 ) {
-
     val backgroundImageRes = getWeatherType(weatherForecastDTO.list[0].weather[0].id).imageRes
     var locationInput by rememberSaveable { mutableStateOf("") }
 
@@ -144,7 +144,9 @@ fun WeatherScreen(
 
 @Composable
 fun WeatherForecastCard(
-    weather: Item0, weatherType: WeatherType, modifier: Modifier = Modifier
+    weather: Item0,
+    weatherType: WeatherType,
+    modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier.padding(horizontal = 20.dp, vertical = 8.dp).fillMaxWidth(),
@@ -184,4 +186,3 @@ fun WeatherForecastCard(
         }
     }
 }
-

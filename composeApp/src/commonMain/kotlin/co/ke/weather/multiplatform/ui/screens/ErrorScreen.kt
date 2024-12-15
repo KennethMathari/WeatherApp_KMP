@@ -52,9 +52,11 @@ fun ErrorScreen(
             )
 
             Text(
-                text = errorMessage, color = Color.Red, style = TextStyle(
+                text = errorMessage, color = Color.Red,
+                style = TextStyle(
                     fontSize = 20.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.2.sp
-                ), textAlign = TextAlign.Center
+                ),
+                textAlign = TextAlign.Center
             )
 
             Spacer(modifier = modifier.height(24.dp))

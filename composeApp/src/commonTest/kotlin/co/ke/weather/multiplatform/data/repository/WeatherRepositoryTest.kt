@@ -29,7 +29,8 @@ class WeatherRepositoryTest {
             sunrise = 54633636,
             sunset = 456456,
             timezone = 554365354
-        ), cnt = 3555, cod = "null", list = emptyList(), message = 200
+        ),
+        cnt = 3555, cod = "null", list = emptyList(), message = 200
     )
 
     private val error = Exception("Error")
@@ -40,7 +41,6 @@ class WeatherRepositoryTest {
 
     @Test
     fun getWeatherForecastReturnsSuccess() = runTest {
-
         everySuspend {
             weatherRepository.getWeatherForecast(
                 latitude, longitude, apiKey
@@ -54,7 +54,6 @@ class WeatherRepositoryTest {
 
     @Test
     fun getWeatherForecastReturnsClientError() = runTest {
-
         everySuspend {
             weatherRepository.getWeatherForecast(
                 latitude, longitude, apiKey
@@ -68,7 +67,6 @@ class WeatherRepositoryTest {
 
     @Test
     fun getWeatherForecastReturnsNetworkError() = runTest {
-
         everySuspend {
             weatherRepository.getWeatherForecast(
                 latitude, longitude, apiKey
@@ -82,7 +80,6 @@ class WeatherRepositoryTest {
 
     @Test
     fun getWeatherForecastReturnsServerError() = runTest {
-
         everySuspend {
             weatherRepository.getWeatherForecast(
                 latitude, longitude, apiKey
@@ -93,5 +90,4 @@ class WeatherRepositoryTest {
 
         assertThat(result).isEqualTo(NetworkResult.ServerError(error))
     }
-
 }

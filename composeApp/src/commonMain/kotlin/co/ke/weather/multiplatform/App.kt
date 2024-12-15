@@ -13,7 +13,6 @@ import org.koin.compose.viewmodel.koinViewModel
 fun App(
     weatherViewModel: WeatherViewModel = koinViewModel()
 ) {
-
     val weatherState by weatherViewModel.weatherState.collectAsStateWithLifecycle()
 
     when {
@@ -30,6 +29,5 @@ fun App(
                 WeatherScreen(weatherForecastDTO = it)
             }
         }
-
     }
 }

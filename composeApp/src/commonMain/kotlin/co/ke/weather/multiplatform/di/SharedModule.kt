@@ -29,18 +29,20 @@ val sharedModule = module {
     single<WeatherRepository> {
         WeatherRepositoryImpl(
             httpClient = get(),
-            ioDispatcher = get(),
+            ioDispatcher = get()
         )
     }
 
     single<HttpClient> {
         HttpClient {
             install(ContentNegotiation) {
-                json(Json {
-                    ignoreUnknownKeys = true
-                    prettyPrint = true
-                    isLenient = true
-                })
+                json(
+                    Json {
+                        ignoreUnknownKeys = true
+                        prettyPrint = true
+                        isLenient = true
+                    }
+                )
             }
 
             install(Logging) {
@@ -63,5 +65,4 @@ val sharedModule = module {
     }
 
     viewModelOf(::WeatherViewModel)
-
 }

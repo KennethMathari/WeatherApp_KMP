@@ -24,7 +24,6 @@ plugins {
     id("dev.mokkery") version "2.3.0"
 }
 
-
 fun loadLocalProperties(): Properties {
     val props = Properties()
     val localPropertiesFile = rootProject.file("local.properties")
@@ -38,10 +37,10 @@ val localProperties = loadLocalProperties()
 val openWeatherApiKey: String =
     localProperties.getProperty("OPEN_WEATHER_API_KEY") ?: "DEFAULT_API_KEY"
 
-
+@OptIn(ExperimentalKotlinGradlePluginApi::class)
 kotlin {
     androidTarget {
-        @OptIn(ExperimentalKotlinGradlePluginApi::class) compilerOptions {
+        compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
@@ -60,14 +59,13 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
-            //Location
+            // Location
             implementation(libs.play.services.location)
-            //Koin
+            // Koin
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
-            //Ktor
+            // Ktor
             implementation(libs.ktor.client.okhttp)
-
         }
 
         commonMain.dependencies {
@@ -79,12 +77,12 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
-            //Koin
+            // Koin
             implementation(libs.koin.compose)
             implementation(libs.koin.compose.viewmodel)
             implementation(libs.koin.core.viewmodel)
             implementation(libs.koin.compose.viewmodel.v410beta1)
-            //Compose Navigation
+            // Compose Navigation
             implementation(libs.navigation.compose)
             // Geolocation
             implementation(libs.compass.geolocation)
@@ -97,8 +95,6 @@ kotlin {
             implementation(libs.ktor.serialization.kotlinx.json)
             // DateTime
             implementation(libs.kotlinx.datetime)
-
-
         }
 
         commonTest.dependencies {
@@ -112,7 +108,7 @@ kotlin {
         }
 
         iosMain.dependencies {
-            //Ktor
+            // Ktor
             implementation(libs.ktor.client.darwin)
         }
 

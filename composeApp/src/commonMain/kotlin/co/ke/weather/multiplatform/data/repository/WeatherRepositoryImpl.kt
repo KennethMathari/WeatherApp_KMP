@@ -18,12 +18,13 @@ import kotlinx.coroutines.flow.flowOn
 
 class WeatherRepositoryImpl(
     private val httpClient: HttpClient,
-    private val ioDispatcher: CoroutineDispatcher,
+    private val ioDispatcher: CoroutineDispatcher
 ) : WeatherRepository {
 
-
     override fun getWeatherForecast(
-        latitude: String, longitude: String, apiKey: String
+        latitude: String,
+        longitude: String,
+        apiKey: String
     ): Flow<NetworkResult<WeatherForecastDTO>> {
         return flow {
             try {
@@ -34,7 +35,11 @@ class WeatherRepositoryImpl(
 
                 if (!response.status.isSuccess()) {
                     println("Error fetching weather forecast: ${response.status}")
-                    emit(NetworkResult.NetworkError(Throwable(message = response.status.description)))
+                    emit(
+                        NetworkResult.NetworkError(
+                            Throwable(message = response.status.description)
+                        )
+                    )
                 }
 
                 val weatherForecastDTO = response.body<WeatherForecastDTO>()
@@ -56,4 +61,3 @@ class WeatherRepositoryImpl(
         }.flowOn(ioDispatcher)
     }
 }
-

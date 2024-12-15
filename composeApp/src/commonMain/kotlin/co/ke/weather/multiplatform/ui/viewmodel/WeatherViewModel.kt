@@ -7,7 +7,6 @@ import co.ke.weather.multiplatform.data.model.weather.WeatherForecastDTO
 import co.ke.weather.multiplatform.domain.repository.WeatherRepository
 import co.ke.weather.multiplatform.ui.state.WeatherState
 import co.ke.weather.multiplatform.utils.NetworkResult
-import co.ke.weather.multiplatform.utils.toDayOfWeek
 import dev.jordond.compass.Priority
 import dev.jordond.compass.geolocation.Geolocator
 import dev.jordond.compass.geolocation.GeolocatorResult
@@ -26,7 +25,6 @@ class WeatherViewModel(
 
     private val openWeatherApiKey = BuildKonfig.OPEN_WEATHER_API_KEY
 
-
     init {
         checkApiKey(openWeatherApiKey)
     }
@@ -41,10 +39,8 @@ class WeatherViewModel(
         }
     }
 
-
     private fun fetchUserLocation() {
         viewModelScope.launch {
-
             _weatherState.value = WeatherState(
                 isLoading = true, weatherForecast = null, errorMessage = null
             )
@@ -59,9 +55,11 @@ class WeatherViewModel(
 
                 is GeolocatorResult.Error -> {
                     val errorMessage = when (locationResult) {
-                        is GeolocatorResult.NotSupported -> "Geolocation is not supported on this device."
+                        is GeolocatorResult.NotSupported ->
+                            "Geolocation is not supported on this device."
                         is GeolocatorResult.NotFound -> "Location not found."
-                        is GeolocatorResult.PermissionError -> "We don't have permission to use geolocation services."
+                        is GeolocatorResult.PermissionError ->
+                            "We don't have permission to use geolocation services."
                         is GeolocatorResult.GeolocationFailed -> "Could not track user location."
                         else -> "An unknown error occurred while fetching location."
                     }
@@ -103,10 +101,8 @@ class WeatherViewModel(
                         )
                     }
                 }
-
             }
         }
-
     }
 
     private fun updateErrorMessage(errorMessage: String) {

@@ -6,6 +6,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface WeatherRepository {
     fun getWeatherForecast(
-        latitude: String, longitude: String, apiKey: String
+        latitude: String,
+        longitude: String,
+        apiKey: String
     ): Flow<NetworkResult<WeatherForecastDTO>>
 }
