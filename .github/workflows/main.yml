@@ -90,6 +90,6 @@ jobs:
       - name: Upload iOS Framework
         uses: actions/upload-artifact@v4
         with:
-          name: ios-framework
-          path: composeApp/build/bin/iosArm64/debugExecutable/
+          name: composeApp.kexe
+          path: composeApp/build/bin/iosArm64/debugExecutable/composeApp.kexe
 
