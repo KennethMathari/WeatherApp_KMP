@@ -17,11 +17,14 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 
 class WeatherRepositoryImpl(
-    private val httpClient: HttpClient, private val ioDispatcher: CoroutineDispatcher
+    private val httpClient: HttpClient,
+    private val ioDispatcher: CoroutineDispatcher
 ) : WeatherRepository {
 
     override fun getWeatherForecast(
-        latitude: String, longitude: String, apiKey: String
+        latitude: String,
+        longitude: String,
+        apiKey: String
     ): Flow<NetworkResult<WeatherForecastDTO>> {
         return flow {
             try {
