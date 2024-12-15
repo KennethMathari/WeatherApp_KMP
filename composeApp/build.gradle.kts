@@ -1,8 +1,6 @@
-import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
 import java.util.Properties
 
 
@@ -11,8 +9,8 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.0")
-        classpath("com.codingfeline.buildkonfig:buildkonfig-gradle-plugin:0.15.2")
+        classpath(libs.kotlin.gradle.plugin)
+        classpath(libs.buildkonfig.gradle.plugin)
     }
 }
 
@@ -23,6 +21,7 @@ plugins {
     alias(libs.plugins.composeCompiler)
     kotlin("plugin.serialization") version "1.9.0"
     id("com.codingfeline.buildkonfig") version "0.15.2"
+    id("dev.mokkery") version "2.3.0"
 }
 
 // Load local.properties
@@ -36,30 +35,28 @@ fun loadLocalProperties(): Properties {
 }
 
 val localProperties = loadLocalProperties()
-val openWeatherApiKey: String = localProperties.getProperty("OPEN_WEATHER_API_KEY") ?: "DEFAULT_API_KEY"
+val openWeatherApiKey: String =
+    localProperties.getProperty("OPEN_WEATHER_API_KEY") ?: "DEFAULT_API_KEY"
 
 
 kotlin {
     androidTarget {
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
-        compilerOptions {
+        @OptIn(ExperimentalKotlinGradlePluginApi::class) compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
-    
+
     listOf(
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64()
+        iosX64(), iosArm64(), iosSimulatorArm64()
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
             isStatic = true
         }
     }
-    
+
     sourceSets {
-        
+
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
@@ -99,9 +96,19 @@ kotlin {
             implementation(libs.ktor.client.logging)
             implementation(libs.ktor.serialization.kotlinx.json)
             // DateTime
-            implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
+            implementation(libs.kotlinx.datetime)
 
 
+        }
+
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+            implementation(kotlin("test-annotations-common"))
+            // Assert
+            implementation(libs.assertk)
+            implementation(libs.kotlin.test.junit)
+            // Kotlin Coroutine Test
+            implementation(libs.kotlinx.coroutines.test)
         }
 
         iosMain.dependencies {
