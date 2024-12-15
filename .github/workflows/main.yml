@@ -24,31 +24,33 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+          cache: 'gradle'
 
-      # 3. Set up Gradle Caching
-      - name: Set up Gradle Cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
+      # 3. Grant execute permission for gradlew
+      - name: Grant execute permissions for gradlew
+        run: chmod +x gradlew
 
-      # 4. Run Android build
-      - name: Build Android App
-        run: ./gradlew assembleDebug
+      # 4. KtLint Check
+      - name: Run KtLint Check
+        run: ./gradlew ktlintCheck
 
       # 5. Run Unit Tests
-      - name: Run Android Tests
-        run: ./gradlew testDebugUnitTest
+      - name: Run Unit Tests
+        run: ./gradlew clean testDebug
 
-      # 6. Upload Android Artifacts
-      - name: Upload Android APK
+      # 6. Build Project
+      - name: Build Project
+        run: ./gradlew :app:buildDebug
+
+      # 7. Generate Debug APK
+      - name: Generate Debug APK
+        run: ./gradlew :app:assembleDebug --stacktrace
+
+      # 8. Upload Debug APK
+      - name: Upload Debug APK
         uses: actions/upload-artifact@v4
         with:
-          name: android-debug-apk
+          name: app-debug.apk
           path: app/build/outputs/apk/debug/app-debug.apk
 
   build-ios:
@@ -82,23 +84,6 @@ jobs:
         with:
           name: ios-framework
           path: build/bin/iosX64/debugFramework
-
-  lint:
-    name: Lint Code
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up JDK
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-
-      - name: Run Lint Check
-        run: ./gradlew lint
 
   clean:
     name: Clean Gradle Cache
