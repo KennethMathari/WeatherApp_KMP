@@ -19,7 +19,7 @@ WeatherApp is a Kotlin Multiplatform (KMP) project that provides a **5-day weath
 - **Location-Based Forecast**: Automatically fetches the user's location to show accurate weather data.
 
 ## API
-> 5 Day Weather Forecast API: <https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={API key}>
+> 5 Day Weather Forecast API: <https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={APIkey}>
 
 ## Libraries, Plugins & Tools
 - <b>Jetpack Compose </b>: For building the UI in a declarative manner.
