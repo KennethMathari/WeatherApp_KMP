@@ -1,0 +1,109 @@
+name: CI/CD Compose Multiplatform
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build-android:
+    name: Build & Test Android
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Set up JDK
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # 3. Set up Gradle Caching
+      - name: Set up Gradle Cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      # 4. Run Android build
+      - name: Build Android App
+        run: ./gradlew assembleDebug
+
+      # 5. Run Unit Tests
+      - name: Run Android Tests
+        run: ./gradlew testDebugUnitTest
+
+      # 6. Upload Android Artifacts
+      - name: Upload Android APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-debug-apk
+          path: app/build/outputs/apk/debug/app-debug.apk
+
+  build-ios:
+    name: Build iOS Framework
+    runs-on: macos-latest
+
+    steps:
+      # 1. Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Set up Java
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # 3. Install Xcode Command Line Tools
+      - name: Install Xcode Command Line Tools
+        run: |
+          xcode-select --install || echo "Xcode Command Line Tools already installed."
+
+      # 4. Build iOS Framework
+      - name: Build iOS Framework
+        run: ./gradlew iosX64Binaries
+
+      # 5. Upload iOS Framework
+      - name: Upload iOS Framework
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-framework
+          path: build/bin/iosX64/debugFramework
+
+  lint:
+    name: Lint Code
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Run Lint Check
+        run: ./gradlew lint
+
+  clean:
+    name: Clean Gradle Cache
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clean Gradle
+        run: ./gradlew clean

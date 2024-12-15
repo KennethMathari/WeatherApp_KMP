@@ -24,7 +24,7 @@ plugins {
     id("dev.mokkery") version "2.3.0"
 }
 
-// Load local.properties
+
 fun loadLocalProperties(): Properties {
     val props = Properties()
     val localPropertiesFile = rootProject.file("local.properties")
