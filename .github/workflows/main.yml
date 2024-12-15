@@ -38,20 +38,20 @@ jobs:
       - name: Run Unit Tests
         run: ./gradlew clean testDebug
 
-      # 6. Build Project
+      # 6. Build Project(Android)
       - name: Build Project
-        run: ./gradlew :app:buildDebug
+        run: ./gradlew build
 
       # 7. Generate Debug APK
       - name: Generate Debug APK
-        run: ./gradlew :app:assembleDebug --stacktrace
+        run: ./gradlew assembleDebug --stacktrace
 
       # 8. Upload Debug APK
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
         with:
           name: app-debug.apk
-          path: app/build/outputs/apk/debug/app-debug.apk
+          path: app/build/outputs/apk/release/app-release.apk
 
   build-ios:
     name: Build iOS Framework

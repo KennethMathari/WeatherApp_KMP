@@ -102,7 +102,6 @@ kotlin {
             implementation(kotlin("test-annotations-common"))
             // Assert
             implementation(libs.assertk)
-            implementation(libs.kotlin.test.junit)
             // Kotlin Coroutine Test
             implementation(libs.kotlinx.coroutines.test)
         }
