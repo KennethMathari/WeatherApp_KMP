@@ -3,6 +3,7 @@ package co.ke.weather.multiplatform.data.repository
 import co.ke.weather.multiplatform.data.model.weather.WeatherForecastDTO
 import co.ke.weather.multiplatform.domain.repository.WeatherRepository
 import co.ke.weather.multiplatform.utils.Constants.WEATHER_FORECAST_BASE_URL
+import co.ke.weather.multiplatform.utils.DispatcherProvider
 import co.ke.weather.multiplatform.utils.NetworkResult
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -12,14 +13,13 @@ import io.ktor.client.plugins.ServerResponseException
 import io.ktor.client.request.get
 import io.ktor.http.isSuccess
 import io.ktor.utils.io.errors.IOException
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 
 class WeatherRepositoryImpl(
     private val httpClient: HttpClient,
-    private val ioDispatcher: CoroutineDispatcher
+    private val dispatcherProvider: DispatcherProvider
 ) : WeatherRepository {
 
     override fun getWeatherForecast(
@@ -57,6 +57,6 @@ class WeatherRepositoryImpl(
             } catch (e: Exception) {
                 emit(NetworkResult.NetworkError(e))
             }
-        }.flowOn(ioDispatcher)
+        }.flowOn(dispatcherProvider.io)
     }
 }

@@ -49,6 +49,7 @@ The app follows **Clean Architecture** principles with a **MVI** (Model-View-Int
 - <b>Kotlinx Serialization </b>: Facilitates data serialization and deserialization in a format-agnostic way.
 - <b>KtLint</b>: creates convenient tasks in your Gradle project that run ktlint checks or do code auto format.
 - <b>Mokkery </b>: For mocking dependencies in tests.
+- <b>Turbine </b>: Specialized library for testing kotlinx.coroutines Flow.
 - <b>Build Konfig </b> : BuildConfig for Kotlin Multiplatform Project.
 - <b>Compass </b> : Kotlin Multiplatform library location toolkit for geocoding and geolocation
 - <b>Assertk </b> : assertions for kotlin tests
@@ -77,6 +78,6 @@ Other dependencies are listed in the build.gradle files.
 ## iOS Weather App Screenshots
 > ![iOS](https://github.com/user-attachments/assets/e2019086-147d-4849-a627-313b6d0144bb)
 
-## APK File
+## Artifacts
 The app artifacts(Android & iOS) can be found from the latest successful action on the [GitHub Actions](https://github.com/KennethMathari/WeatherApp_KMP/actions) tab
 

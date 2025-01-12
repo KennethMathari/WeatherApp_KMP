@@ -3,6 +3,10 @@ package co.ke.weather.multiplatform.di
 import co.ke.weather.multiplatform.data.repository.WeatherRepositoryImpl
 import co.ke.weather.multiplatform.domain.repository.WeatherRepository
 import co.ke.weather.multiplatform.ui.viewmodel.WeatherViewModel
+import co.ke.weather.multiplatform.utils.DefaultDispatcherProvider
+import co.ke.weather.multiplatform.utils.DispatcherProvider
+import dev.jordond.compass.geolocation.Geolocator
+import dev.jordond.compass.geolocation.mobile
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.plugins.HttpTimeout
@@ -13,24 +17,24 @@ import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.http.HttpHeaders
 import io.ktor.serialization.kotlinx.json.json
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.serialization.json.Json
 import org.koin.compose.viewmodel.dsl.viewModelOf
 import org.koin.dsl.module
 
 val sharedModule = module {
 
-    single<CoroutineDispatcher> {
-        Dispatchers.IO
+    single<DispatcherProvider> {
+        DefaultDispatcherProvider()
     }
 
     single<WeatherRepository> {
         WeatherRepositoryImpl(
-            httpClient = get(),
-            ioDispatcher = get()
+            httpClient = get(), dispatcherProvider = get()
         )
+    }
+
+    single<Geolocator> {
+        Geolocator.mobile()
     }
 
     single<HttpClient> {
@@ -38,10 +42,10 @@ val sharedModule = module {
             install(ContentNegotiation) {
                 json(
                     Json {
-                        ignoreUnknownKeys = true
-                        prettyPrint = true
-                        isLenient = true
-                    }
+                    ignoreUnknownKeys = true
+                    prettyPrint = true
+                    isLenient = true
+                }
                 )
             }
 
