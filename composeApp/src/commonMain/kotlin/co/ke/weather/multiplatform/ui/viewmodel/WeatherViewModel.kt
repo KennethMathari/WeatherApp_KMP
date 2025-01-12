@@ -6,18 +6,20 @@ import co.ke.weather.multiplatform.BuildKonfig
 import co.ke.weather.multiplatform.data.model.weather.WeatherForecastDTO
 import co.ke.weather.multiplatform.domain.repository.WeatherRepository
 import co.ke.weather.multiplatform.ui.state.WeatherState
+import co.ke.weather.multiplatform.utils.DispatcherProvider
 import co.ke.weather.multiplatform.utils.NetworkResult
 import dev.jordond.compass.Priority
 import dev.jordond.compass.geolocation.Geolocator
 import dev.jordond.compass.geolocation.GeolocatorResult
-import dev.jordond.compass.geolocation.mobile
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class WeatherViewModel(
-    private val weatherRepository: WeatherRepository
+    private val weatherRepository: WeatherRepository,
+    private val dispatcherProvider: DispatcherProvider,
+    private val geolocator: Geolocator
 ) : ViewModel() {
 
     private val _weatherState = MutableStateFlow(WeatherState())
@@ -31,21 +33,19 @@ class WeatherViewModel(
 
     fun checkApiKey(openWeatherApiKey: String) {
         if (openWeatherApiKey.isEmpty() || openWeatherApiKey == "DEFAULT_API_KEY") {
-            _weatherState.value = WeatherState(
-                isLoading = false, weatherForecast = null, errorMessage = "API Key is not set!"
-            )
+            updateErrorMessage(errorMessage = "API Key is not set!")
         } else {
             fetchUserLocation()
         }
     }
 
-    private fun fetchUserLocation() {
-        viewModelScope.launch {
+    fun fetchUserLocation() {
+        viewModelScope.launch(dispatcherProvider.main) {
             _weatherState.value = WeatherState(
                 isLoading = true, weatherForecast = null, errorMessage = null
             )
 
-            when (val locationResult = Geolocator.mobile().current(Priority.HighAccuracy)) {
+            when (val locationResult = geolocator.current(Priority.HighAccuracy)) {
                 is GeolocatorResult.Success -> {
                     val latitude = locationResult.data.coordinates.latitude
                     val longitude = locationResult.data.coordinates.longitude
@@ -64,16 +64,14 @@ class WeatherViewModel(
                         else -> "An unknown error occurred while fetching location."
                     }
 
-                    _weatherState.value = WeatherState(
-                        isLoading = false, weatherForecast = null, errorMessage = errorMessage
-                    )
+                    updateErrorMessage(errorMessage)
                 }
             }
         }
     }
 
-    private fun getWeatherForecast(latitude: Double, longitude: Double) {
-        viewModelScope.launch {
+    fun getWeatherForecast(latitude: Double, longitude: Double) {
+        viewModelScope.launch(dispatcherProvider.main) {
             weatherRepository.getWeatherForecast(
                 latitude = latitude.toString(),
                 longitude = longitude.toString(),
@@ -105,15 +103,15 @@ class WeatherViewModel(
         }
     }
 
-    private fun updateErrorMessage(errorMessage: String) {
-        viewModelScope.launch {
+    fun updateErrorMessage(errorMessage: String) {
+        viewModelScope.launch(dispatcherProvider.main) {
             _weatherState.value = WeatherState(
                 isLoading = false, weatherForecast = null, errorMessage = errorMessage
             )
         }
     }
 
-    private fun filterDailyWeather(forecast: WeatherForecastDTO): WeatherForecastDTO {
+    fun filterDailyWeather(forecast: WeatherForecastDTO): WeatherForecastDTO {
         val filteredList = forecast.list.filter { weatherItem ->
             weatherItem.dtTxt.contains("12:00:00")
         }

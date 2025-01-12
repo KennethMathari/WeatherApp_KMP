@@ -112,6 +112,8 @@ kotlin {
             implementation(libs.assertk)
             // Kotlin Coroutine Test
             implementation(libs.kotlinx.coroutines.test)
+            // Turbine
+            implementation(libs.turbine)
         }
 
         iosMain.dependencies {
